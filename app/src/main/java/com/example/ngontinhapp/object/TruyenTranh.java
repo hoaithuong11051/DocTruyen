@@ -9,7 +9,7 @@ public class TruyenTranh {
     public TruyenTranh(String tenTruyen, String tenChap, String linkAnh){
         this.tenTruyen = tenTruyen;
         this.tenChap = tenChap;
-        linkAnh = linkAnh;
+        this.linkAnh = linkAnh;
     }
 
     public String getTenTruyen() {
