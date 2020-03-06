@@ -1,24 +1,19 @@
 package com.example.ngontinhapp.adapter;
 
 import android.content.Context;
-import android.media.Image;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.ngontinhapp.R;
 import com.example.ngontinhapp.object.TruyenTranh;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TruyenTranhAdapter extends RecyclerView.Adapter<TruyenTranhAdapter.ViewHolder> {
@@ -72,23 +67,5 @@ public class TruyenTranhAdapter extends RecyclerView.Adapter<TruyenTranhAdapter.
         }
     }
 
-    public void searchTruyen(String s) {
-        if (s.isEmpty()){
-            truyenTranhs.clear();
-            truyenTranhs.addAll(truyenTranhsGoc);
-        }
-        else{
-            List<TruyenTranh> truyenTranhList = new ArrayList<>();
-            for (int i = 0; i < truyenTranhsGoc.size();i++){
-                if (truyenTranhsGoc.get(i).getTenTruyen().toLowerCase().startsWith(s.toLowerCase())){
-                    truyenTranhList.add(truyenTranhsGoc.get(i));
-                }
-            }
-            Log.d("Main", String.valueOf(truyenTranhList.size()));
-            truyenTranhs.clear();
-            truyenTranhs.addAll(truyenTranhList);
-        }
-        notifyDataSetChanged();
-    }
 
 }

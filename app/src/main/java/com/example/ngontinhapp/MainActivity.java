@@ -1,14 +1,12 @@
 package com.example.ngontinhapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         anhxa();
         sepUp();
         getData();
-        setClick();
+
     }
 
     private void anhxa() {
@@ -72,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 adapter.setData(truyenTranhs);
+                setClick(truyenTranhs);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(stringRequest);
     }
 
-    private void setClick() {
+    private void setClick(final List<TruyenTranh> truyenTranhs) {
         edtTimKiem.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -91,13 +90,23 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("Main", s.toString());
-                adapter.searchTruyen(s.toString());
+
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                String s = edtTimKiem.getText().toString().trim().toLowerCase();
+                if (s.isEmpty()) {
+                    adapter.setData(truyenTranhs);
+                } else {
+                    List<TruyenTranh> truyenTranhList = new ArrayList<>();
+                    for (int i = 0; i < truyenTranhs.size(); i++) {
+                        if (truyenTranhs.get(i).getTenTruyen().toLowerCase().startsWith(s.toLowerCase())) {
+                            truyenTranhList.add(truyenTranhs.get(i));
+                        }
+                    }
+                    adapter.setData(truyenTranhList);
+                }
             }
         });
     }
