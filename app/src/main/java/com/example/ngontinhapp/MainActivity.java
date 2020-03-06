@@ -1,52 +1,104 @@
 package com.example.ngontinhapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.widget.GridView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.ngontinhapp.adapter.TruyenTranhAdapter;
 import com.example.ngontinhapp.object.TruyenTranh;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-GridView gdvDSTruyen;
-TruyenTranhAdapter adapter;
-ArrayList<TruyenTranh> truyenTranhArrayList;
+    RecyclerView recyclerView;
+    TruyenTranhAdapter adapter;
+    EditText edtTimKiem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
+        adapter = new TruyenTranhAdapter(this);
         anhxa();
         sepUp();
+        getData();
         setClick();
     }
-    private void init(){
-        truyenTranhArrayList = new ArrayList<>();
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://st.nettruyen.com/data/comics/154/ba-dao-tieu-thuc-xin-treu-choc-vua-thoi.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
-        truyenTranhArrayList.add(new TruyenTranh("Danh môn chí ái","chap24.2","https://chiasekienthuc365.com/wp-content/uploads/2019/08/Untitled-1.jpg"));
+
+    private void anhxa() {
+        recyclerView = findViewById(R.id.recyclerView);
+        edtTimKiem = findViewById(R.id.edtTimKiem);
 
 
-        adapter  = new TruyenTranhAdapter(this,0,truyenTranhArrayList);
+    }
 
+    private void sepUp() {
+        recyclerView.setAdapter(adapter);
     }
-    private void anhxa(){
-        gdvDSTruyen = findViewById(R.id.gdvDSTruyen);
+
+    private void getData() {
+        String url = "https://truyentranhandroid.000webhostapp.com/danhsachtruyen.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                List<TruyenTranh> truyenTranhs = new ArrayList<>();
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String tenTruyen = object.getString("tenTruyen");
+                        String chapTruyen = object.getString("chapTruyen");
+                        String anhTruyen = object.getString("anhTruyen");
+                        TruyenTranh truyenTranh = new TruyenTranh(tenTruyen, chapTruyen, anhTruyen);
+                        truyenTranhs.add(truyenTranh);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                adapter.setData(truyenTranhs);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        Volley.newRequestQueue(this).add(stringRequest);
     }
-    private void sepUp(){
-        gdvDSTruyen.setAdapter(adapter);
+
+    private void setClick() {
+        edtTimKiem.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("Main", s.toString());
+                adapter.searchTruyen(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
-    private void setClick(){}
 }
