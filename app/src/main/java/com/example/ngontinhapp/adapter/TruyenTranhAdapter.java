@@ -55,6 +55,7 @@ public class TruyenTranhAdapter extends RecyclerView.Adapter<TruyenTranhAdapter.
             return truyenTranhs.size();
     }
 
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvTenTruyen, tvTenChap;
         ImageView imgAnh;
